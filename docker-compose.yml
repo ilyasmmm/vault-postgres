@@ -1,0 +1,70 @@
+version: '3.6'
+
+volumes:
+  postgresdb:
+  pgadmin:
+
+networks:
+    backend:
+      driver: bridge
+
+services:
+
+  postgresdb:
+    image: postgres:13.11
+    container_name: vault_postgres_db
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-passwordadmin}
+      PGDATA: /data/postgres
+    networks:
+      - backend
+    volumes:
+       - postgresdb:/data/postgres
+       - ./sql/init_vault_table.sql:/docker-entrypoint-initdb.d/init_vault_table.sql
+
+  pgadmin:
+    container_name: vault_pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+       - pgadmin:/var/lib/pgadmin
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    networks:
+      - backend
+    restart: unless-stopped
+
+  vault:
+    image: hashicorp/vault
+    container_name: vault
+    restart: always
+    ports:
+      - 8200:8200
+    command: 
+      - "server"
+    cap_add:
+      - IPC_LOCK
+    environment:
+      - VAULT_ADDR=http://127.0.0.1:8200
+      - VAULT_API_ADDR=http://127.0.0.1:8200
+    volumes:
+      - ./vault/config:/vault/config
+      - ./vault/logs:/vault/logs
+      - ./vault/data:/vault/data
+      - ./vault/policies:/vault/policies
+    depends_on:
+      - postgresdb
+    networks:
+      - backend
+
+  
+
+
+
