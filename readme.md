@@ -57,3 +57,29 @@ Add a new server in PgAdmin:
 4. After that, it will show the login form, select Method ``token`` and insert previously saved root_token to login.
 
 5. You have successfully access Vault Management UI.
+
+## Create and Access Secret (Key-Values)
+
+**Official Documentation (Create and Access from CLI):** <https://developer.hashicorp.com/vault/tutorials/getting-started/getting-started-first-secret>
+
+1. Enter the ``Secret Engine`` menu on sidebar, then click ``Enable new engine`` on the top right.
+
+2. Choose ``KV`` then click ``Next``.
+
+3. Enter ``Path`` with your intended value path (ex: ``my-secret``) then click ``Enable engine``.
+
+4. You will enter page for your newly created secret path, then click ``Create secret``.
+
+5. Enter ``Path for this secret``  with your intended value (ex: ``username-password``). Then insert your secret data. Example:
+
+    ```json
+    {
+        "user": "my_user",
+        "password": "my_password
+    }
+
+    ```
+
+6. Then click ``Save``. Your secret is successfully created and ready to be accessed.
+
+7. You can access this secret via API on ``http://localhost:8200/v1/my-secret/data/username-password``, you can use root token to be able access this secret.
