@@ -83,3 +83,53 @@ Add a new server in PgAdmin:
 6. Then click ``Save``. Your secret is successfully created and ready to be accessed.
 
 7. You can access this secret via API on ``http://localhost:8200/v1/my-secret/data/username-password``, you can use root token to be able access this secret.
+
+### Create Approle (Via CLI)
+
+**Official Documentation:** <https://developer.hashicorp.com/vault/docs/auth/approle>
+
+1. Enter the container terminal using command:
+
+    ```sh
+    docker exec -it vault /bin/sh
+    ```
+
+2. Login to vault using the root token and enable approle auth using command:
+
+    ```sh
+    vault login {{your-root-token}}
+
+    vault auth enable approle
+    ```
+
+3. Create new Approle using command:
+
+    ```sh
+    vault write auth/approle/role/my-role \
+        secret_id_ttl=10m \
+        token_num_uses=10 \
+        token_ttl=20m \
+        token_max_ttl=30m \
+        secret_id_num_uses=40
+    ```
+
+4. Get RoleID of the Approle:
+
+    ```sh
+    vault read auth/approle/role/my-role/role-id
+
+    # Example Output:
+    role_id     db02de05-fa39-4855-059b-67221c5c2f63
+    ```
+
+5. Get a SecretID issued against the AppRole:
+
+    ```sh
+    vault write -f auth/approle/role/my-role/secret-id
+
+    # Example Output:
+    secret_id               6a174c20-f6de-a53c-74d2-6018fcceff64
+    secret_id_accessor      c454f7e5-996e-7230-6074-6ef26b7bcf86
+    secret_id_ttl           10m
+    secret_id_num_uses      40
+    ```
