@@ -1,7 +1,7 @@
 # Vault-Posgres
 
 This is docker-compose for Hashicorp with Vault integration.
-This repos is for exploring Hashicorp-Vault functionality with Postgres as its storage.
+This repository is for development purposes for using Hashicorp-Vault functionality with Postgres as its storage.
 
 ## Run
 
